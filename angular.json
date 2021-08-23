@@ -47,10 +47,14 @@
             "aot": true,
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/web.config",
+              "src/assets/icofont"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/assets/icofont/icofont.min.css",
+              "src/assets/hover-min.css"
             ],
             "scripts": []
           },

@@ -1,1 +1,86 @@
-/* You can add global styles to this file, and also import other style files */
+body, html {
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  overscroll-behavior: none;
+}
+input:focus {
+  outline: none;
+}
+select:focus {
+  outline: none;
+}
+
+.blue {
+  color: #0A0E80
+}
+  ._2col {
+  display: grid;
+  grid-template-columns: 25% 75%;
+  }
+
+@keyframes animate-stripes {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 60px 0;
+  }
+}
+
+@keyframes auto-progress {
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+.progress-bar {
+  background-color: #1a1a1a;
+  height: 45px;
+  width: 450px;
+  margin: 50px auto;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px #000 inset, 0 1px 0 #444;
+}
+
+.stripes {
+  background-size: 30px 30px;
+  background-image: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, .15) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, .15) 50%,
+      rgba(255, 255, 255, .15) 75%,
+      transparent 75%,
+      transparent
+  );
+}
+
+.stripes.animated {
+  animation: animate-stripes 0.6s linear infinite;
+}
+
+.stripes.animated.slower {
+  animation-duration: 1.25s;
+}
+
+.stripes.reverse {
+  animation-direction: reverse;
+}
+
+.progress-bar-inner {
+  display: block;
+  height: 45px;
+  width: 0%;
+  background-color: #34c2e3;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+  position: relative;
+  animation: auto-progress 5s infinite linear;
+}

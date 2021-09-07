@@ -1,0 +1,24 @@
+<div *ngIf="!showMessage" class="overlay" >
+    <div class="progress-bar stripes animated reverse slower">
+      <span class="progress-bar-inner"></span>
+    </div>
+</div>
+
+<div *ngIf="showMessage" class="message">
+  <div class="content" >
+    <h3 class="red">
+      <i class="icofont-exclamation-tringle"></i>
+      UNAUTHORIZED ACCESS
+      <i class="icofont-exclamation-tringle"></i>
+    </h3>
+
+    <p>
+      It appears you do not have access to this site...<br/>
+      If you feel this is in error please contact helpdesk for further assistance.
+    </p>
+
+  </div>
+
+
+</div>
+

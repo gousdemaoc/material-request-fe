@@ -1,0 +1,30 @@
+.overlay {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  min-width: 100%;
+  max-height: 100%;
+  max-width: 100%;
+  /*background: rgba(255,255,255,.85);*/
+  background: rgba(0, 0, 0, 0.75);
+  top: 0px;
+  left: 0px;
+  z-index: 99999;
+}
+
+.message {
+  display: flex;
+  min-height: 75vh;
+  font-family: Helvetica;
+}
+.message h3 {
+  color: #f14746;
+}
+.message .content {
+  margin: auto;
+  text-align: center;
+}
+
+/*# sourceMappingURL=no-auth.component.css.map */

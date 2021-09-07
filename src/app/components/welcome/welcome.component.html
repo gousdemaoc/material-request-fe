@@ -1,0 +1,93 @@
+<div class="body">
+
+  <div class="menu">
+    <div class="message">
+      <div class="wrap">
+        <div class="search">
+          <input #reqsearch class="searchTerm" type="text" placeholder="Search">
+          <button type="submit" class="searchButton" >
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <ul class="menuItems">
+      <li class="item">
+
+
+      </li>
+      <li *ngIf="user && user.emc_applications[0].emc_access_level === 1" class="item" (click)="initializeNewRequest()">Create a request</li>
+      <li *ngIf="user && user.emc_applications[0].emc_access_level === 2" class="item" (click)="showReportToggle()">Reporting <i class="far fa-chart-bar blue"></i></li>
+      <!-- <li *ngIf="user.emc_applications[0].emc_access_level === 1" class="item" (click)="showDialog = true;">Show dialog</li>
+      <li class="item" (click)="changeView('open')">New Request...</li>
+      <li class="item" (click)="changeView('open')">View Open Requests</li>
+      <li class="item" (click)="changeView('fulfilled')">View Fulfilled Requests</li>
+      <li class="item" (click)="changeView('closed')">View Recently Closed requests</li>-->
+    </ul>
+  </div>
+
+
+  <div class="main">
+    <div class="requests">
+      <div class="card">
+        <ng-container *ngIf="requests">
+
+          <div *ngFor="let req of requests; let i = index" class="requestItem" hover-class="requestItemHover" [ngClass]="{'requestItemSelected': selectedRequest && selectedRequest.request_id === req.request_id }" (click)="selectRequestItem(req.request_id)">
+
+            <div class="header">
+              <div class="submitted">ID: {{req.request_id}}</div>
+              <div class="plant">{{translatePlant(req.org_id)}}</div>
+            </div>
+            <div class="body">
+              <div><strong>{{req.status}}</strong></div>
+              <div>By: {{req.requested_by}}</div>
+              <div>Submitted: {{req.dtm_submitted | date}}</div>
+              <div style="text-align: center; margin-top: 1em;">{{req.lines.length}} Item<ng-container *ngIf="req.lines.length > 1">s</ng-container> requested</div>
+            </div>
+            <div class="footer">
+              <div>Required: {{req.dtm_required | date}}</div>
+            </div>
+
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+
+      <app-request-dlg [user]="user" (closeOpenRequest)="closeRequestDialog($event)" (saveOpenRequest)="saveRequestFromDialog($event)" (cancelOpenRequest)="cancelRequestFromDialog($event)" *ngIf="selectedRequest" [selectedRequest]="selectedRequest"></app-request-dlg>
+      <app-report-dlg (closeReport)="closeReportDialog($event)" *ngIf="showReport"></app-report-dlg>
+
+
+  </div>
+
+
+
+
+</div>
+
+<div class="overlay" *ngIf="showDialog">
+  <div class="dialog" *ngIf="!working">
+    <ng-container *ngIf="dlgMessage && dlgMessage.length > 0">
+      <div class="dlgMsg">
+        <p>{{dlgMessage}}</p>
+      </div>
+      <div class="dlgConfirm">
+        <button (click)="this.dlgConfirm.next(true);">YES</button><button (click)="this.dlgConfirm.next(false);">NO</button>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="showNotes">
+      <div style="font-size: .5em;opacity: .85; text-align: right; color: red;">*esc to close</div>
+      <div class="notes">
+        <div style="width: 100%; margin-bottom: 2em;">NOTES:</div>
+        <div><textarea rows="15" cols="55" [(ngModel)]="selectedRequest.notes"></textarea></div>
+      </div>
+
+    </ng-container>
+  </div>
+  <ng-container *ngIf="working">
+    <div class="progress-bar stripes animated reverse slower">
+      <span class="progress-bar-inner"></span>
+    </div>
+
+  </ng-container>
+</div>

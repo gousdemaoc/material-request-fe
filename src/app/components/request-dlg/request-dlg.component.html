@@ -1,0 +1,261 @@
+<div class="container">
+  <div class="dialog">
+    <div class="header">
+      <div class="left"></div>
+      <div class="center">REQUEST ID: <span>{{selectedRequest.request_id > 0 ? selectedRequest.request_id : 'New Request'}}</span></div>
+      <div class="right">
+
+<!--        <div class="dot green hvr-pop tool-tip"  data-tooltip="Save">&lt;!&ndash;<i class="icofont-save"></i>&ndash;&gt;</div>-->
+<!--        <div class="dot yellow hvr-pop tool-tip" data-tooltip="Cancel" (click)="handleCancelRequest()">&lt;!&ndash;<i class="icofont-caret-down icofont-2x"></i>&ndash;&gt;</div>-->
+<!--        <div class="dot red hvr-push  tool-tip" data-tooltip="Close" (click)="handleCloseRequest()">&lt;!&ndash;<i class="icofont-save"></i>&ndash;&gt;</div>-->
+
+      </div>
+
+    </div>
+    <div class="form">
+
+      <div class="requestHdr">
+        <div>
+<!--          User-->
+          <div>
+            <ul>
+              <li>{{user.login.toUpperCase()}}</li>
+              <li>{{user.first_name.toUpperCase()}} {{user.last_name.toUpperCase()}}</li>
+              <li>{{user.email}}</li>
+            </ul>
+
+          </div>
+        </div>
+        <div>
+<!--          Dates stuff-->
+          <div>
+            <ul>
+              <li>
+                Submitted on:
+                {{selectedRequest.dtm_submitted | date}}
+              </li>
+              <li>
+                Required By:
+                <input type="date" [value]="selectedRequest.dtm_required | date: 'yyyy-MM-dd'" (input)="selectedRequest.dtm_required=$event.target.valueAsDate" [disabled]="selectedRequest.status !== 'NEW'" >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div>
+<!--          Other stuff-->
+          <div>
+            <ul>
+              <li>Request Status: {{selectedRequest.status}}</li>
+              <li>Requested By: {{selectedRequest.requested_by}}</li>
+              <li>
+                <span>Plant: </span>
+                <select [disabled]="selectedRequest.status !== 'NEW'" [(ngModel)]="selectedRequest.org_id">
+                  <option value="85">TNC</option>
+                  <option value="285">TNR</option>
+                </select>
+              </li>
+            </ul>
+
+          </div>
+
+        </div>
+
+
+      </div>
+      <div class="requestBldr" *ngIf="selectedRequest && selectedRequest.request_id <= 0" >
+        <!--Materials-->
+        <div class="box">
+            <div>Materials</div>
+                <input #mat_search type="text">
+                <div *ngIf="materials.length <= 1" [ngClass]="{'loading' : materials.length <= 1}"></div>
+                <div #materialSelector class="select-container" >
+                  <div *ngFor="let m of filteredMaterials; let i = index" (click)="selectMaterial(i)" title="{{m.ITEM_NO}} {{m.DESCRIPTION}}">
+                    {{m.ITEM_NO}}
+                    {{m.DESCRIPTION}}
+                  </div>
+                </div>
+
+          </div>
+        <!--Packages-->
+        <div class="box">
+            <div>Packages</div>
+
+            <input #pkg_search  type="text" >
+              <div *ngIf="materials.length <= 1" [ngClass]="{'loading' : materials.length <= 1}"></div>
+              <div *ngIf="materials.length > 1">
+
+                <div #packageSelector class="select-container">
+                  <div *ngFor="let p of filteredPackages; let i = index;" (click)="selectPackage(i)" title="{{p.CONT_TYPE}} {{p.CONT_MAX_VOL}} {{p.PKG_TYPE}} {{p.PKG_MAT}} {{p.PKG_LID_CLASS}} {{p.PKG_LINING_CLASS}} {{p.PKG_OTHER_CLASS}}">
+                    {{p.CONT_TYPE}}
+                    {{p.CONT_MAX_VOL}}
+                    {{p.PKG_TYPE}}
+                    {{p.PKG_MAT}}
+                    {{p.PKG_LID_CLASS}}
+                    {{p.PKG_LINING_CLASS}}
+                    {{p.PKG_OTHER_CLASS}}
+                  </div>
+                </div>
+              </div>
+          </div>
+<!--        <div class="box">-->
+<!--          <div>Weight</div>-->
+<!--          <div>-->
+<!--            <input type="number" min="5" max="100" value="100">-->
+<!--          </div>-->
+<!--        </div>-->
+        <!--Qty & Ctrls-->
+        <div class="box">
+          <div>Quantity:</div>
+          <div class="_2col">
+            <div><input #mat_qty min="1" max="99" type="number"></div>
+            <div >
+              <div class="dot hvr-icon-spin" style="float: left; height: 2em; width: 2em;" [ngClass]="{'green' : (this.materialRef && this.materialRef.material && this.materialRef.package && this.materialRef.quantity && this.materialRef.quantity > 0),
+                             'gray': (!this.materialRef || !this.materialRef.material || !this.materialRef.package || !this.materialRef.quantity || this.materialRef.quantity <= 0)}">
+                <i style="font-size: 1em;"
+                 (click)="addLineItem()"
+                 class="icofont-plus hvr-icon"
+                 >
+                </i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+      <div class="requestItems">
+        <div>
+          <table style="width: 100%;" *ngIf="selectedRequest.lines.length > 0">
+          <thead>
+            <tr>
+              <th *ngIf="selectedRequest.status === 'NEW'" style="border: none;"></th>
+              <th>Item Code</th>
+              <th>Description</th>
+              <th>Package</th>
+              <th>QTY</th>
+  <!--            <th>Filled By</th>-->
+  <!--            <th>Filled on</th>-->
+  <!--            <th>Actual QTY</th>-->
+  <!--            <th>Recv By</th>-->
+  <!--            <th>Recv on</th>-->
+  <!--            <th>Recv QTY</th>-->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let line of selectedRequest.lines; let i = index" [ngClass]="{'altRow': i%2===0 }" class="pointer" >
+            <td *ngIf="selectedRequest.status === 'NEW'" align="center" ><div style="height: 1.5em; width: 1.5em;" class="dot red hvr-push"><i class="icofont-close white" (click)="deleteItem(i)" ></i></div> </td>
+            <td>{{line.inventory_item_id}}</td>
+            <td>{{line.item_desc}}</td>
+            <td>{{line.package_type_desc}}</td>
+            <td>{{line.requested_qty}}</td>
+<!--            <td>{{line.fulfilled_by}}</td>-->
+<!--            <td><ng-container *ngIf="showDate(selectedRequest.dtm_fulfilled)">{{selectedRequest.dtm_fulfilled | date}}</ng-container></td>-->
+<!--            <td><span >{{line.actual_qty > 0 ? line.actual_qty : ''}}</span></td>-->
+<!--            <td>{{line.received_by}}</td>-->
+<!--            <td><ng-container *ngIf="showDate(selectedRequest.dtm_received)">{{selectedRequest.dtm_received | date}}</ng-container></td>-->
+<!--            <td><span *ngIf="(!recvRequest) ">{{line.received_qty > 0 ? line.received_qty : ''}}</span></td>-->
+          </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="materials-list-msg" *ngIf="this.selectedRequest.lines <= 0">
+                <p>NO MATERIALS HAVE BEEN ADDED TO THIS REQUEST</p>
+        </div>
+        <ng-container *ngIf="user.emc_applications[0].emc_access_level == 1 && this.selectedRequest.lines.length > 0 && selectedRequest.request_id <= 0">
+          <div style="position: absolute; bottom: 1em; width: 100%; margin: 0 auto;" class="controls">
+            <button  (click)="handleCloseRequest()" ><i class="icofont-ui-close" style="color: rgba(241, 71, 70,1)"></i> Close Request</button >
+            <button (click)=" handleSaveRequest()"><i class="icofont-save" style="color: rgba(56, 193, 49, 1)" ></i> Save</button>
+          </div>
+
+        </ng-container>
+
+      </div>
+
+      <div class="requestEditor" *ngIf="selectedRequest && selectedRequest.request_id > 0">
+
+        <ng-container *ngIf="user.emc_applications[0].emc_access_level == 2">
+          <div><input type="checkbox" [disabled]="editQuantities === true" [(ngModel)]="editQuantities"> Mark as filled</div>
+          <div>&nbsp;</div>
+          <div style="margin-bottom: 2em;" class="update-request">
+            <div>ITEM</div>
+            <div>PKG</div>
+            <div>PKG QTY</div>
+            <div>FILLED QTY</div>
+            <div>FILLED PRODUCT WEIGHT</div>
+          </div>
+<!--          <div>&nbsp;</div>-->
+          <div class="update-request"  [ngClass]="{'disable': editQuantities === false}"  *ngFor="let line of selectedRequest.lines">
+            <div>
+              {{line.inventory_item_id}}&nbsp;&nbsp;{{line.item_desc}}
+            </div>
+            <div>
+              {{line.package_type_desc}}
+            </div>
+            <div>
+              {{line.requested_qty}}
+            </div>
+            <div>
+              <input type="number" min="1" max="99" [(ngModel)]="line.actual_qty"  style="font-size: .85em;">
+            </div>
+            <div>
+              <input type="number" min="1" max="99" [(ngModel)]="line.fulfilled_weight"  style="font-size: .85em;"> LBS
+            </div>
+          </div>
+          <div><br></div>
+          <div style="position: absolute; bottom: 1em; width: 100%; margin: 0 auto;"  class="controls">
+            <button  (click)="handleCloseRequest()" ><i class="icofont-ui-close" style="color: rgba(241, 71, 70,1)"></i> Close Request</button >
+            <button (click)="handleSaveRequest()"><i class="icofont-save" style="color: rgba(56, 193, 49, 1)"></i> Save</button>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="user.emc_applications[0].emc_access_level == 1 && selectedRequest.status == 'FILLED'">
+          <div><input type="checkbox" [disabled]="editQuantities === true" [(ngModel)]="editQuantities"> Mark as received</div>
+          <div>&nbsp;</div>
+          <!--column headers-->
+          <div style="margin-bottom: 1em;"  class="update-request">
+            <div>ITEM</div>
+            <div>PKG</div>
+            <div>QTY</div>
+            <div>RECV QTY</div>
+          </div>
+          <!--row data & line qty inputs-->
+          <div class="update-request" [ngClass]="{'disable': editQuantities === false}" *ngFor="let line of selectedRequest.lines">
+            <div>
+              {{line.inventory_item_id}}&nbsp;&nbsp;{{line.item_desc}}
+            </div>
+            <div>
+              {{line.package_type_desc}}
+            </div>
+            <div>
+              {{line.requested_qty}}
+            </div>
+            <div>
+              <input type="number" min="1" max="99" style="font-size: .85em;"  [(ngModel)]="line.received_qty">
+            </div>
+          </div>
+          <div><br></div>
+          <div style="position: absolute; bottom: 1em; width: 100%; margin: 0 auto;"  class="controls">
+            <button  (click)="handleCloseRequest()" ><i class="icofont-ui-close" style="color: rgba(241, 71, 70,1)"></i> Close Request</button >
+            <button (click)="handleSaveRequest()"><i class="icofont-save" style="color: rgba(56, 193, 49, 1)"></i> Save</button>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="user.emc_applications[0].emc_access_level == 1 && selectedRequest.status == 'PENDING'">
+          <div style="height: 100%; width: 100%;" class="controls">
+            <button  (click)="handleCloseRequest()" ><i class="icofont-ui-close" style="color: rgba(241, 71, 70,1)"></i> Close Request</button >
+            <button (click)="handleCancelRequest()" ><i class="icofont-ban" style="color: rgba(241, 71, 70,1)"></i> Cancel Request</button>
+<!--            <button><i class="icofont-save" style="color: rgba(56, 193, 49, 1)"></i> Save</button>-->
+          </div>
+
+        </ng-container>
+
+
+      </div>
+
+
+
+    </div>
+  </div>
+
+</div>

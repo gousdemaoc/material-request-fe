@@ -1,0 +1,44 @@
+<div class="container">
+  <div class="dialog">
+
+    <div class="header">
+      <div></div>
+      <div class="title">REPORTING</div>
+      <div class="toolbar"><i class="far fa-times-circle" (click)="handleCloseDialog()"></i></div>
+    </div>
+    <div class="body">
+      <div>
+        <select [(ngModel)]="selectedMonth" (change)="handleMonthChange()">
+          <option *ngFor="let m of months" value="{{m}}">{{m}}</option>
+        </select>
+      </div>
+      <div *ngIf="reportData && reportData.length > 0">
+        <table style="width: 100%; margin-top: 1em;">
+          <tr>
+            <th *ngFor="let header of reportHeaders">{{header.replace('_', ' ')}}</th>
+          </tr>
+          <tr *ngFor="let d of reportData; let i = index" [ngClass]="{'oddRow': i%2 == 0}">
+            <td>{{d.REQUESTED_BY}}</td>
+            <td>{{d.REQUESTED_ON | date}}</td>
+            <td>{{d.FULFILLED_ON | date}}</td>
+            <td>{{d.RECEIVED_ON | date}}</td>
+            <td>{{d.ORG_ID}}</td>
+            <td>{{d.STATUS}}</td>
+            <td style="text-align: right">{{d.ITEM_DESC}}</td>
+            <td>{{d.PACKAGE_TYPE_DESC}}</td>
+            <td>{{d.FULFILLED_QTY ? d.FULFILLED_QTY : '---'}}</td>
+            <td>{{d.FULFILLED_WEIGHT ? d.FULFILLED_WEIGHT : '---'}}</td>
+            <td>{{d.RECEIVED_QTY ? d.RECEIVED_QTY : '---'}}</td>
+          </tr>
+        </table>
+      </div>
+      <div *ngIf="!reportData || reportData.length <= 0">
+        <div class="noData">
+          No Data was returned for the month you selected...
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+

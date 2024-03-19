@@ -5,19 +5,35 @@
       <div class="wrap">
         <div class="search">
           <input #reqsearch class="searchTerm" type="text" placeholder="Search">
-          <button type="submit" class="searchButton" >
+          <button type="submit" class="searchButton">
             <i class="fa fa-search"></i>
           </button>
         </div>
       </div>
     </div>
     <ul class="menuItems">
-      <li class="item">
-
-
+      <li *ngIf="user && user.emc_applications[0].emc_access_level === 1" class="item" (click)="initializeNewRequest()">
+        Create a request</li>
+      <li *ngIf="user && user.emc_applications[0].emc_access_level === 2" class="item" (click)="showReportToggle()">
+        Reporting <i class="far fa-chart-bar blue"></i></li>
+      <li>
+        <li class="item">
+          <a href="http://aoccol-70.aoc-resins.com:8080/SplashBI/en_US/reports/ReportPortal.html?portalCode=t1fm75fcm7"
+            target="_blank">
+            Run Report
+          </a>
       </li>
-      <li *ngIf="user && user.emc_applications[0].emc_access_level === 1" class="item" (click)="initializeNewRequest()">Create a request</li>
-      <li *ngIf="user && user.emc_applications[0].emc_access_level === 2" class="item" (click)="showReportToggle()">Reporting <i class="far fa-chart-bar blue"></i></li>
+      <li>
+        <div style="color: red; font-weight: bold;">
+          <p>Version: {{ version }}</p>
+      </div>
+
+        <ng-container *ngIf="dbVersion !== null && dbVersion.trim() !== ''">
+          <label class="color-red">
+            <b>Db Version:</b> {{ dbVersion }}
+          </label><br/>
+        </ng-container>
+      </li>
       <!-- <li *ngIf="user.emc_applications[0].emc_access_level === 1" class="item" (click)="showDialog = true;">Show dialog</li>
       <li class="item" (click)="changeView('open')">New Request...</li>
       <li class="item" (click)="changeView('open')">View Open Requests</li>
@@ -29,10 +45,21 @@
 
   <div class="main">
     <div class="requests">
+      <div class="filter-bar">
+        <label for="fromDate">From :</label>
+        <input type="date" class="date" id="fromDate" [(ngModel)]="fromDate" [max]="toDate" />
+        <label for="toDate">To :</label>
+        <input type="date" class="date" id="toDate" [(ngModel)]="toDate" [min]="fromDate" />
+        <button class="search_btn" (click)="getRequestByDate()">Search</button>
+
+      </div>
+
       <div class="card">
         <ng-container *ngIf="requests">
 
-          <div *ngFor="let req of requests; let i = index" class="requestItem" hover-class="requestItemHover" [ngClass]="{'requestItemSelected': selectedRequest && selectedRequest.request_id === req.request_id }" (click)="selectRequestItem(req.request_id)">
+          <div *ngFor="let req of requests; let i = index" class="requestItem" hover-class="requestItemHover"
+            [ngClass]="{'requestItemSelected': selectedRequest && selectedRequest.request_id === req.request_id }"
+            (click)="selectRequestItem(req.request_id)">
 
             <div class="header">
               <div class="submitted">ID: {{req.request_id}}</div>
@@ -42,7 +69,8 @@
               <div><strong>{{req.status}}</strong></div>
               <div>By: {{req.requested_by}}</div>
               <div>Submitted: {{req.dtm_submitted | date}}</div>
-              <div style="text-align: center; margin-top: 1em;">{{req.lines.length}} Item<ng-container *ngIf="req.lines.length > 1">s</ng-container> requested</div>
+              <div style="text-align: center; margin-top: 1em;">{{req.lines.length}} Item<ng-container
+                  *ngIf="req.lines.length > 1">s</ng-container> requested</div>
             </div>
             <div class="footer">
               <div>Required: {{req.dtm_required | date}}</div>
@@ -54,8 +82,10 @@
     </div>
 
 
-      <app-request-dlg [user]="user" (closeOpenRequest)="closeRequestDialog($event)" (saveOpenRequest)="saveRequestFromDialog($event)" (cancelOpenRequest)="cancelRequestFromDialog($event)" *ngIf="selectedRequest" [selectedRequest]="selectedRequest"></app-request-dlg>
-      <app-report-dlg (closeReport)="closeReportDialog($event)" *ngIf="showReport"></app-report-dlg>
+    <app-request-dlg [user]="user" (closeOpenRequest)="closeRequestDialog($event)"
+      (saveOpenRequest)="saveRequestFromDialog($event)" (cancelOpenRequest)="cancelRequestFromDialog($event)"
+      *ngIf="selectedRequest" [selectedRequest]="selectedRequest"></app-request-dlg>
+    <app-report-dlg (closeReport)="closeReportDialog($event)" *ngIf="showReport"></app-report-dlg>
 
 
   </div>
@@ -72,7 +102,8 @@
         <p>{{dlgMessage}}</p>
       </div>
       <div class="dlgConfirm">
-        <button (click)="this.dlgConfirm.next(true);">YES</button><button (click)="this.dlgConfirm.next(false);">NO</button>
+        <button (click)="this.dlgConfirm.next(true);">YES</button><button
+          (click)="this.dlgConfirm.next(false);">NO</button>
       </div>
     </ng-container>
     <ng-container *ngIf="showNotes">

@@ -1,18 +1,20 @@
 .body {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 20em auto;
-  grid-gap: 1em;
-  overscroll-behavior: none;
+  display: flex;
+  height: calc(100vh - 64px);
 }
 
 .menu {
-  margin-left: 3em;
+  // margin-left: 3em;
+  width: 20%;
+  background: #efefef;
+  padding-top: 1rem;
+
   .wrap {
     /*border: thin blue solid;*/
     .search {
       margin-left: auto;
       margin-right: auto;
+      width: 12rem;
       .searchTerm {
         border: solid thin rgba(0,0,0, .35);
         border-right: none;
@@ -33,15 +35,25 @@
 
   .menuItems {
     list-style-type: none;
+    padding-left: 1rem;
     .item{
       cursor: pointer;
       font-family: Helvetica, serif;
       color: rgba(0,0,0, .75);
-      margin-bottom: .5em;
-      transition: all 100ms ease-in-out;
+      // margin-bottom: .5em;
+      // transition: font-weight .2s ease-in-out;
+      padding: 4px 0;
+      border-bottom: 1px solid #cecece;
+      a{
+        font-size: inherit;
+        text-decoration: none;
+        color: inherit;
+      }
     }
     .item:hover {
-      transform: scale(1.15);
+      background: #e2e2e2;
+      // color:#e2e2e2;
+      // transform: scale(1.15);
     }
   }
 
@@ -49,24 +61,43 @@
 }
 
 .main {
-    margin-right: 2em;
+    // margin-right: 2em;
+    width: 100%;
+    padding-top: 1rem;
+    padding-left: 1rem;
   .requests {
     font-family: Helvetica, serif;
     color: rgba(0,0,0, .75);
     min-height: 30em;
-    max-height: 30em;
-    overflow: scroll;
+    // max-height: 30em;
+    height: calc(100vh - 100px);
+    overflow: hidden;
+    .filter-bar{
+      padding-bottom: 12px;
+      border-bottom: 1px solid #efefef;
+    }
+
+    label{
+      font-weight: bold;
+      margin-right: 1em;
+    }
+    .date{
+      margin-right: 1em;
+      width: 10em;
+    }
     .card {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
+      overflow: auto;
+      height: calc(100vh - 9rem);
       .requestItem {
         display: block;
         border: solid thin rgba(0,0,0, .15);
         border-radius: 3px;
         /*box-shadow: 10px 10px 10px 10px rgba(0,0,0,0.05);*/
         text-align: center;
-        margin: 2em;
+        margin: 1em 1em 1em 0;
         height: 10em;
         width: 10em;
         .header{
@@ -213,7 +244,7 @@
 
 .active {
   cursor: pointer;
-  transition: all 100ms ease-in-out;
+  transition: all .2s ease-in-out;
 }
 .active:hover {
   transform: scale(1.5);

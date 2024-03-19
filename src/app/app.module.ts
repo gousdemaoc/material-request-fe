@@ -14,6 +14,7 @@ import { NoAuthComponent } from './components/no-auth/no-auth.component';
 import { HoverClassDirective } from './hover-class.directive';
 import { RequestDlgComponent } from './components/request-dlg/request-dlg.component';
 import { ReportDlgComponent } from './components/report-dlg/report-dlg/report-dlg.component';
+import { DatePipe } from '@angular/common';
 
 
 
@@ -34,7 +35,7 @@ import { ReportDlgComponent } from './components/report-dlg/report-dlg/report-dl
     StoreModule.forRoot({}, {}),
     EffectsModule.forRoot([])
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

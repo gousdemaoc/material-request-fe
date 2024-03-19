@@ -8,9 +8,11 @@ import {MaterialRequest} from '../components/welcome/welcome.component';
 @Injectable()
 export class DataService {
 
-  private server: string[] = [ 'https://localhost:5001/', 'http://aoccol-181D/', 'http://alphaapps.aoc-resins.com/'  ];
-  private serverIndex: number = this.server.length - 1;
-  private app: string = 'MaterialRequestBE/api/';
+  private server: string[] = [ 'http://alphaapps.aoc-resins.com/','http://aoccol-181x.aoc-resins.com/','https://localhost:44348/', 'http://aoccol-181D/','http://dev.alphaapps.aoc-resins.com/'  ];
+  private serverIndex: number = this.server.length - 3;
+  // private app: string = 'MaterialRequestBE/api/';
+   private app: string = 'api/';
+  private monthlyRequest:string='MonthlyRequests/'
   //private app: string = 'api/';
   private appID: string = '201'
   constructor(private http: HttpClient) { }
@@ -29,6 +31,10 @@ export class DataService {
 
   getAllRequests(): Observable<any> {
     return this.http.get<any>(`${this.server[this.serverIndex]}${this.app}requests`);
+  }
+
+  getAllRequestsByDate(r): Observable<any> {
+    return this.http.get<any>(`${this.server[this.serverIndex]}${this.app}${this.monthlyRequest}${r.fromDate}/${r.toDate}`);
   }
 
   saveRequest(r, action){

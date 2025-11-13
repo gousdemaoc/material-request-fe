@@ -9,7 +9,9 @@ export interface UserState {
   locid: number,
   plant_restricted: boolean,
   super_user: boolean,
-  emc_applications: Array<EMC_Application>
+  emc_applications: Array<EMC_Application>,
+  dbVersion: string,
+  serverName: string
 }
 export interface DataState {
   products: Product[];

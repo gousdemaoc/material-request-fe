@@ -11,6 +11,8 @@ const InitialUserState: UserState = {
   locid: -1,
   plant_restricted: false,
   super_user: false,
+  dbVersion: '',
+  serverName: '',
   emc_applications: [
     {
       emc_app_id: -1,
@@ -47,6 +49,8 @@ export const userReducer = createReducer<UserState>(
       email: action.user.email,
       login: action.user.login,
       locid: action.user.locid,
+      dbVersion: action.user.dbVersion,
+      serverName: action.user.serverName,
       plant_restricted: action.user.plant_restricted,
       super_user: action.user.super_user,
       emc_applications: action.user.emc_applications

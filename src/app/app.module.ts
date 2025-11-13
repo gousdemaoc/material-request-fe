@@ -15,6 +15,7 @@ import { HoverClassDirective } from './hover-class.directive';
 import { RequestDlgComponent } from './components/request-dlg/request-dlg.component';
 import { ReportDlgComponent } from './components/report-dlg/report-dlg/report-dlg.component';
 import { DatePipe } from '@angular/common';
+import { NoItemDialogComponent } from './no-item-dialog/no-item-dialog.component';
 
 
 
@@ -25,7 +26,8 @@ import { DatePipe } from '@angular/common';
     NoAuthComponent,
     HoverClassDirective,
     RequestDlgComponent,
-    ReportDlgComponent
+    ReportDlgComponent,
+    NoItemDialogComponent
   ],
   imports: [
     BrowserModule,

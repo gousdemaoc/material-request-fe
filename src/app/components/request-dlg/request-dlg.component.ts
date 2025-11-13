@@ -5,6 +5,7 @@ import {getData} from '../../data-module/data.reducer';
 import {UserState} from '../../data-module/state/Data.state';
 import {fromEvent } from 'rxjs';
 import {take} from 'rxjs/operators';
+import * as DataActions from '../../data-module/state/data.actions';
 
 
 
@@ -29,41 +30,77 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
   // Materials Variables
   @ViewChild('mat_search') mat_srch: ElementRef;
   @ViewChild('materialSelector') ms: ElementRef;
-  materials;
-  filteredMaterials;
+  materials:any=[];
+  filteredMaterials:any=[];
   msIndex = 0;
 
   // Package Variables
   @ViewChild('pkg_search') pk_srch: ElementRef;
   @ViewChild('packageSelector') ps: ElementRef;
-  packages;
-  filteredPackages;
+  packages:any=[];
+  filteredPackages:any=[];
   psIndex = 0;
 
   @ViewChild('mat_qty') mat_qty: ElementRef;
 
   // Other Variables
   referenceDate: Date;
-  materialRef: MaterialRef;
+  materialRef: MaterialRef = {
+  material: {
+    INVENTORY_ITEM_ID: 0,
+    ITEM_NO: '',
+    DESCRIPTION: '',
+    BULK_ITEM_ID: ''
+  },
+  package: {
+    CONT_TYPE: '',
+    CONT_MAX_VOL: '',
+    PKG_TYPE: '',
+    PKG_MAT: '',
+    PKG_LID_CLASS: '',
+    PKG_LINING_CLASS: '',
+    PKG_OTHER_CLASS: ''
+  },
+  quantity: 0
+};
 
   editQuantities = false;
+  showNoItemDialog=false;
 
   ngOnInit(): void {
-
+    this.store.dispatch(DataActions.loadMaterials());
     this.editQuantities = false;
     this.referenceDate = new Date('January 1, 1900');
     this.store.select(getData).subscribe( state => {
+      console.log('state',state);
+      if(state!==null){
       this.materials = state[1].products;
       this.packages = state[1].packages;
 
       //console.log(this.materials);
       this.psIndex = -1;
       this.msIndex = -1;
+      }else{
+        this.materials=[{
+          ITEM_NO:'TEST',
+          DESCRIPTION:'TEST'
+        },
+      {
+          ITEM_NO:'TEST',
+          DESCRIPTION:'TEST'
+        }];
+        this.packages=[];
+      }
+      
     });
 
     this.filteredMaterials = [];
 
     this.initializeNewMaterial();
+
+    if (this.selectedRequest.request_id <= 0) {
+      this.setRequiredByDate();
+    }
 
   }
   ngAfterViewInit() {
@@ -180,6 +217,22 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
 
   }
 
+  setRequiredByDate() {
+    let daysToAdd = 3;
+    let currentDate = new Date();
+  
+    while (daysToAdd > 0) {
+      currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+  
+      // Skip weekends (Saturday = 6, Sunday = 0)
+      if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
+        daysToAdd--;
+      }
+    }
+  
+    this.selectedRequest.dtm_required = currentDate;
+  }
+
   filterMaterials(search) {
 
       //Reset the selected Index on the materials list
@@ -187,6 +240,7 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
       //Remove any selections that might be made already
       // @ts-ignore
     Array.from(this.ms.nativeElement.children).map(elem => elem.classList.remove('selected'));
+    console.log('filtering',this.materials)
       this.filteredMaterials = this.materials.filter( mat => {
         return (
           mat.ITEM_NO.toUpperCase().startsWith(search.toUpperCase())
@@ -256,6 +310,16 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
 
 
   addLineItem (){
+    // alert('adding new line')
+    // if(this.selectedRequest.request_id === -1){
+    //   this.selectedRequest.request_id = 1;
+    // }
+    // if(this.materialRef.quantity===undefined){
+    //   this.materialRef.quantity=0;
+
+    // }
+    console.log('adding new line')
+    console.log(this.selectedRequest.lines.length)
     if(this.selectedRequest.lines.length < 4 && this.materialRef && this.materialRef.material && this.materialRef.package && this.materialRef.quantity && this.materialRef.quantity > 0){
       let requestLine = {
         request_id: this.selectedRequest.request_id,
@@ -273,6 +337,10 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
       this.selectedRequest.lines.push(JSON.parse(JSON.stringify(requestLine)));
       requestLine = undefined;
       this.initializeNewMaterial();
+    }else{
+      console.log('No item to add')
+    this.showNoItemDialog=true;
+
     }
   }
   deleteItem(index){
@@ -340,7 +408,7 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
         PKG_LINING_CLASS: '',
         PKG_OTHER_CLASS: ''
       },
-      quantity: undefined
+      quantity: 0
     }
     // It's not enough to initialized the object because of the functionality of the controls
     if(this.mat_srch){
@@ -361,6 +429,9 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
 
   }
 
+  closeNoItemDialog(){
+    this.showNoItemDialog=false;
+  }
 
 }
 

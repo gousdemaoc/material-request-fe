@@ -3,7 +3,7 @@ import {Actions, createEffect, ofType} from '@ngrx/effects';
 import * as UserActions from './user.actions';
 import * as DataActions from './data.actions';
 import {DataService} from '../data.service';
-import {map, mergeMap} from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
 
 @Injectable()
 export class DataEffects {
@@ -15,7 +15,7 @@ export class DataEffects {
           ofType(DataActions.loadMaterials),
           mergeMap(() => this.ds.getAllMaterials()
             .pipe (
-              map(products => DataActions.loadMaterialsSuccess( { products }))
+              map(products => DataActions.loadMaterialsSuccess({ products: products ?? [] }))
             )
           )
         )
@@ -27,7 +27,7 @@ export class DataEffects {
         ofType(DataActions.loadPackages),
         mergeMap( () => this.ds.getAllPackages()
           .pipe(
-            map( packages => DataActions.loadPackagesSuccess( {packages}))
+            map( packages => DataActions.loadPackagesSuccess( {packages:packages??[]}))
           )
         )
       )
@@ -39,6 +39,10 @@ export class DataEffects {
           ofType(UserActions.loadUserInfo),
           mergeMap(() => this.ds.getEmployeeInfo()
             .pipe (
+              tap(user => {
+                // Set the local value here
+                this.ds.dbVersion = user.dbVersion;
+              }),
               map(user => UserActions.loadUserInfoSuccess({ user }))
             )
           )

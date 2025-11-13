@@ -11,7 +11,6 @@ import * as UserActions from '../../data-module/state/user.actions';
 import * as DataActions from '../../data-module/state/data.actions';
 import { DatePipe } from '@angular/common';
 import { VersionService } from '../../services/version.service';
-import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
@@ -46,7 +45,7 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
 
   user: UserState;
   version: string;
-  dbVersion: string = environment.dbVersion;
+  dbVersion: string;
   materials;
   materialSuggestions;
 
@@ -80,7 +79,9 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
     { org_id: 85, plant: 'TNC' },
   ]
 
-  constructor(private datePipe: DatePipe, private ds: DataService, private store: Store<UserState>, private router: Router, private route: ActivatedRoute, private versionService: VersionService) { }
+  constructor(private datePipe: DatePipe, private ds: DataService, private store: Store<UserState>, private router: Router, private route: ActivatedRoute, private versionService: VersionService) { 
+    this.dbVersion = ds.dbVersion;
+  }
 
   ngOnInit(): void {
 
@@ -260,8 +261,9 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
       lines: new Array<MatReqLines>()
     }
   }
+  
   selectRequestItem(id) {
-    try {
+    try {     
       // console.log(`inside selectRequest with id: ${id}`);
       this.selectedRequest = JSON.parse(JSON.stringify(this.requests.find(item => { return item.request_id === id })));
       this.fillRequest = this.showDate(this.selectedRequest.dtm_fulfilled);
@@ -351,7 +353,9 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
 
   // Form actions
   closeSelectedRequest() {
-
+    if(this.selectedRequest.request_id === -1){
+      this.selectedRequest.request_id = 1;
+    }
     const id = this.selectedRequest.request_id;
 
     const original = JSON.stringify(this.requests.find(r => r.request_id === id));
@@ -369,6 +373,13 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
     });
 
   }
+
+
+
+
+
+
+
   clearSelectedRequest() {
     this.initializeNewRequest();
     this.selectedRequest = undefined;

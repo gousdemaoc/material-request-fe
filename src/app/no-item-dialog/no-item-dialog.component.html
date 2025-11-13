@@ -1,0 +1,9 @@
+<div class="dialog-backdrop" (click)="closeDialog()">
+  <div class="dialog" (click)="$event.stopPropagation()">
+    <h2>Nothing to add here</h2>
+    <p>There are currently no items selected.</p>
+    <div class="actions">
+      <button (click)="closeDialog()">OK</button>
+    </div>
+  </div>
+</div>

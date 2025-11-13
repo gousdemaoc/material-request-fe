@@ -16,32 +16,25 @@ import {filter, map, mergeMap} from 'rxjs/operators';
 })
 export class AppComponent {
   title = 'MaterialRequestFE';
+  loggedInUser: string = 'N/A';
+  dbVersion: string = 'N/A';
+  serverName: string = 'N/A';
+
   constructor(private ds: DataService, private store: Store<UserState>, private router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
 
-    // this.router.navigate(['welcome']);
 
-    // this.store.dispatch(UserActions.loadUserInfo());
-    // this.store.dispatch(DataActions.loadMaterials());
-    // this.store.dispatch(DataActions.loadPackages());
-    //
-    // this.store.select(getUser).subscribe( state => {
-    //
-    //   if(state && state[0] && state[0].last_name && state[0].emc_applications[0].emc_app_id == 201){
-    //
-    //     // console.log(`inside app.comp and state is true...`);
-    //     this.router.navigate(['welcome']);
-    //
-    //   }
-    //   else{
-    //     setTimeout( () => {
-    //       this.router.navigate(['nope']);
-    //     });
-    //   }
-    //
-    // });
+    this.ds.getEmployeeInfo().subscribe(identity => {
+      if (identity) {
+
+        console.log(identity);
+        this.loggedInUser = identity.login;
+        this.dbVersion = identity.dbVersion || 'N/A';
+        this.serverName = identity.serverName || 'N/A';
+      }
+    });
 
   }
 

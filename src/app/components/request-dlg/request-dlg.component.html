@@ -171,7 +171,7 @@
         </ng-container>
 
       </div>
-
+    <app-no-item-dialog *ngIf="showNoItemDialog" (close)="closeNoItemDialog()"></app-no-item-dialog>
       <div class="requestEditor" *ngIf="selectedRequest && selectedRequest.request_id > 0">
 
         <ng-container *ngIf="user.emc_applications[0].emc_access_level == 2">

@@ -240,7 +240,6 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
       //Remove any selections that might be made already
       // @ts-ignore
     Array.from(this.ms.nativeElement.children).map(elem => elem.classList.remove('selected'));
-    console.log('filtering',this.materials)
       this.filteredMaterials = this.materials.filter( mat => {
         return (
           mat.ITEM_NO.toUpperCase().startsWith(search.toUpperCase())
@@ -318,8 +317,6 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
     //   this.materialRef.quantity=0;
 
     // }
-    console.log('adding new line')
-    console.log(this.selectedRequest.lines.length)
     if(this.selectedRequest.lines.length < 4 && this.materialRef && this.materialRef.material && this.materialRef.package && this.materialRef.quantity && this.materialRef.quantity > 0){
       let requestLine = {
         request_id: this.selectedRequest.request_id,
@@ -338,7 +335,6 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
       requestLine = undefined;
       this.initializeNewMaterial();
     }else{
-      console.log('No item to add')
     this.showNoItemDialog=true;
 
     }
@@ -370,13 +366,6 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
   }
 
   handleSaveRequest() {
-
-    console.log(`inside handle Save`);
-
-    console.log(this.selectedRequest);
-
-    //return;
-
     this.selectedRequest.lines.forEach(item => {
       if (this.selectedRequest.status === 'PENDING') {
         this.selectedRequest.dtm_fulfilled = new Date()

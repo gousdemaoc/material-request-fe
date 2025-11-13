@@ -3,7 +3,6 @@ const hostname = window.location.hostname;
 let serverIndex = 0;
 let app = '';
 
-console.log(hostname);
 if (hostname.includes('alphaapps.aoc')) {
   serverIndex = 0;
   app = 'MaterialRequestBE/api/'
@@ -13,6 +12,9 @@ if (hostname.includes('alphaapps.aoc')) {
 }else if (hostname.includes('aoccol-181sc')){
   serverIndex = 3;
   app = 'MaterialRequestBE/api/';
+}else if (hostname.includes('aoccol-181s')){
+  serverIndex = 4;
+  app = 'MaterialRequestBE/api/';
 }
 // else if(hostname.includes('localhost'))
 // {
@@ -21,7 +23,7 @@ if (hostname.includes('alphaapps.aoc')) {
 // }
 else if(hostname.includes('localhost'))
 {
-  serverIndex = 3;
+  serverIndex = 4;
   app = 'MaterialRequestBE/api/';
 }
 else{

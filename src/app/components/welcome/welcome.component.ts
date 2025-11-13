@@ -101,8 +101,6 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
     this.store.select(getUser).subscribe(state => {
       if (state && state[0] && state[0].last_name && state[0].emc_applications[0].emc_app_id == 201) {
         this.user = state[0];
-      console.log('USER--->', this.user)
-      
         this.getAllRequests();
       }
       else {
@@ -207,10 +205,6 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
     // console.log("Fetching all open requests")
     this.ds.getOpenRequests().subscribe(data => {
       this.originalRequests = this.user.emc_applications[0].emc_access_level === 1 ? data : data.filter(item => item.status === 'PENDING');
-      
-      console.log('USER--->', this.user )
-      console.log('getAllRequests--->', this.originalRequests )
-
       this.requests = JSON.parse(JSON.stringify(this.originalRequests));
       // console.table(this.requests);
       this.sortData(this.requests, 'request_id');
@@ -229,9 +223,6 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
       this.ds.getAllRequestsByDate({ fromDate: this.fromDate, toDate: this.toDate }).subscribe(data => {
       
         this.originalRequests = this.user.emc_applications[0].emc_access_level === 1 ? data : data.filter(item => item.status === 'PENDING');
-        console.log('USER--->', this.user )
-        console.log('getAllRequestsByDate--->', this.originalRequests )
-
         this.requests = JSON.parse(JSON.stringify(this.originalRequests));
         // console.table(this.requests);
         this.sortData(this.requests, 'request_id');

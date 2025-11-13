@@ -9,7 +9,7 @@ import { AppConfig } from '../config';
 @Injectable()
 export class DataService {
 
-  private server: string[] = [ 'http://alphaapps.aoc-resins.com/','http://aoccol-181x.aoc-resins.com/','https://localhost:44348/', 'http://aoccol-181sc.aoc-resins.com/','http://dev.alphaapps.aoc-resins.com/'  ];
+  private server: string[] = [ 'http://alphaapps.aoc-resins.com/','http://aoccol-181x.aoc-resins.com/','https://localhost:44348/', 'http://aoccol-181sc.aoc-resins.com/','http://aoccol-181s.aoc-resins.com/','http://dev.alphaapps.aoc-resins.com/'  ];
   private serverIndex: number = AppConfig.serverIndex;
   private app: string = AppConfig.app;
 //private app: string = 'MaterialRequestBE/api/';

@@ -28,8 +28,6 @@ export class AppComponent {
 
     this.ds.getEmployeeInfo().subscribe(identity => {
       if (identity) {
-
-        console.log(identity);
         this.loggedInUser = identity.login;
         this.dbVersion = identity.dbVersion || 'N/A';
         this.serverName = identity.serverName || 'N/A';
@@ -37,5 +35,4 @@ export class AppComponent {
     });
 
   }
-
 }

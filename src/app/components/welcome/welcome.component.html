@@ -12,14 +12,23 @@
       </div>
     </div>
     <ul class="menuItems">
-      <li *ngIf="user?.emc_applications?.length && user.emc_applications[0]?.emc_access_level === 1" 
-    class="item" 
-    (click)="initializeNewRequest()">
+      <li
+  *ngIf="user?.emc_applications?.length && 
+         (user.emc_applications[0]?.emc_access_level === 1 ||
+          user.emc_applications[0]?.emc_access_level === 10)"
+  class="item"
+  (click)="initializeNewRequest()">
   Create a request
 </li>
-      <li *ngIf="user && user.emc_applications[0].emc_access_level === 2" class="item" (click)="showReportToggle()">
-        Reporting <i class="far fa-chart-bar blue"></i></li>
-      <li>
+      <li
+  *ngIf="user && 
+         (user.emc_applications[0].emc_access_level === 2 ||
+          user.emc_applications[0].emc_access_level === 10)"
+  class="item"
+  (click)="showReportToggle()">
+  Reporting <i class="far fa-chart-bar blue"></i>
+</li>
+
         <li class="item">
           <a href="http://aoccol-70.aoc-resins.com:8080/SplashBI/en_US/reports/ReportPortal.html?portalCode=t1fm75fcm7"
             target="_blank">
@@ -29,6 +38,9 @@
       <li>
         <div style="color: red; font-weight: bold;">
           <p>Version: {{ version }}</p>
+      </div>
+      <div>
+          <p>Role: {{ role }}</p>
       </div>
 
         <!-- <ng-container *ngIf="dbVersion !== null && dbVersion.trim() !== ''">

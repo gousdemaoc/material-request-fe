@@ -9,25 +9,18 @@ if (hostname.includes('alphaapps.aoc')) {
 } else if (hostname.includes('aoccol-181x')){
   serverIndex = 1;
   app = 'MaterialRequestBE/api/';
-}else if (hostname.includes('aoccol-181sc')){
+}else if (hostname.includes('aoccol-181s')){
+  serverIndex = 2;
+  app = 'MaterialRequestBE/api/';
+}else if (hostname.includes('aoccol-281s')){
   serverIndex = 3;
   app = 'MaterialRequestBE/api/';
-}else if (hostname.includes('aoccol-181s')){
-  serverIndex = 4;
-  app = 'MaterialRequestBE/api/';
-}
-// else if(hostname.includes('localhost'))
-// {
-//     serverIndex = 2;
-//   app = 'api/';
-// }
-else if(hostname.includes('localhost'))
-{
+}else if (hostname.includes('aoccol-281d')){
   serverIndex = 4;
   app = 'MaterialRequestBE/api/';
 }
 else{
-    serverIndex = 3;
+    serverIndex = 5;
     app = 'api/';
 }
 

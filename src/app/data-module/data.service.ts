@@ -9,7 +9,14 @@ import { AppConfig } from '../config';
 @Injectable()
 export class DataService {
 
-  private server: string[] = [ 'http://alphaapps.aoc-resins.com/','http://aoccol-181x.aoc-resins.com/','https://localhost:44348/', 'http://aoccol-181sc.aoc-resins.com/','http://aoccol-181s.aoc-resins.com/','http://dev.alphaapps.aoc-resins.com/'  ];
+  private server: string[] = [
+    'http://alphaapps.aoc-resins.com/',
+    'http://aoccol-181x.aoc-resins.com/',    
+    'http://aoccol-181s.aoc-resins.com/',
+    'https://aoccol-281s.aoc-resins.com/',
+    'https://aoccol-281d.aoc-resins.com/',    
+    'https://localhost:44308/',
+  ];
   private serverIndex: number = AppConfig.serverIndex;
   private app: string = AppConfig.app;
 //private app: string = 'MaterialRequestBE/api/';
@@ -49,6 +56,12 @@ export class DataService {
 
   getReportData(month) : Observable<any> {
     return this.http.get<any>( `${this.server[this.serverIndex]}${this.app}monthlyrequests/${month}`);
+  }
+
+  getReportDataByDuration(startDate: string, endDate: string): Observable<any> {
+     return this.http.get<any>(
+     `${this.server[this.serverIndex]}${this.app}MonthlyRequests/monthlyrequestbyduration?startDate=${startDate}&endDate=${endDate}`
+    );
   }
 
   getFulfilledRequests(): Observable<any> {

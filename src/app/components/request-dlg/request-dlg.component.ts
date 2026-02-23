@@ -379,6 +379,12 @@ export class RequestDlgComponent implements OnInit, AfterViewInit {
     this.saveOpenRequest.emit(this.selectedRequest);
   }
 
+  preventDecimal(event: KeyboardEvent) {
+  if (event.key === '.' || event.key === 'e' || event.key === '-') {
+    event.preventDefault();
+  }
+  }
+
   initializeNewMaterial(){
 
     this.materialRef = {

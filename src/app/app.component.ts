@@ -31,6 +31,9 @@ export class AppComponent {
         this.loggedInUser = identity.login;
         this.dbVersion = identity.dbVersion || 'N/A';
         this.serverName = identity.serverName || 'N/A';
+
+    // store everything in NgRx
+      localStorage.setItem('user', JSON.stringify(identity));
       }
     });
 

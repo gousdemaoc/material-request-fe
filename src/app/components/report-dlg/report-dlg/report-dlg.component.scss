@@ -1,4 +1,3 @@
-
 .container {
   font-family: Helvetica, serif;
   animation: fadeIn ease 500ms;
@@ -15,7 +14,6 @@
   place-items: center;
 
   .dialog {
-
     height: 50em;
     width: 80em;
     background-color: white;
@@ -23,7 +21,9 @@
     border: solid thin rgba(0, 0, 0, .35);
     box-shadow: 0px 0px 25px rgba(0, 0, 0, .15);
 
-    //padding: 2em;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;  // prevent popup overflow
 
     .header {
       min-width: 100%;
@@ -36,32 +36,54 @@
       border-top-right-radius: 12px;
 
       .title {
-
-       display: flex;
+        display: flex;
         place-items: center;
         place-content: center;
       }
+
       .toolbar {
         align-self: center;
         text-align: right;
         margin-right: 1.5em;
       }
-
     }
 
     .body {
       padding: 1.5rem;
+      flex: 1;                 // body fills remaining space
+      overflow: hidden;        // prevent outer scroll
+      display: flex;
+      flex-direction: column;
 
       select {
         margin-bottom: 4rem;
+      }
+
+      /* TABLE SCROLL CONTAINER */
+      .table-container {
+        flex: 1;
+        overflow-y: auto;      // only table scrolls
+        margin-top: 1em;
+        border: 1px solid #e2e2e2;
+        border-radius: 6px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
       }
 
       th {
         font-size: .75em;
         border-bottom: solid thin black;
         text-align: center;
+        background-color: #f2f2f2;
+        position: sticky;
+        top: 0;                // sticky header
+        z-index: 5;
       }
-      td{
+
+      td {
         font-size: .65em;
         text-align: center;
       }
@@ -71,15 +93,12 @@
       }
 
       .noData {
-        min-height: 20em;
+        flex: 1;
         display: flex;
         place-items: center;
         place-content: center;
-        /*border: solid thin black;*/
         font-size: 1.5rem;
       }
     }
   }
-
-
 }

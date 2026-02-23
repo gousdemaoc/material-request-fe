@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { UserState } from '../../data-module/state/Data.state';
@@ -14,28 +21,23 @@ import { VersionService } from '../../services/version.service';
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
-  styleUrls: ['./welcome.component.scss']
+  styleUrls: ['./welcome.component.scss'],
 })
 export class WelcomeComponent implements OnInit, AfterViewInit {
-
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
     if (event.key.toUpperCase() === 'ESCAPE') {
       if (this.showDialog) {
-        if (this.showNotes)
-          this.closeDialog();
+        if (this.showNotes) this.closeDialog();
         else {
           this.closeDialog();
-          if (!this.dlgMessage)
-            this.clearSelectedRequest();
+          if (!this.dlgMessage) this.clearSelectedRequest();
         }
-      }
-      else {
+      } else {
         this.closeSelectedRequest();
         //this.closeDialog();
       }
     }
-
   }
 
   @ViewChild('search') search: ElementRef;
@@ -45,6 +47,7 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
 
   user: UserState;
   version: string;
+  role: string;
   dbVersion: string;
   materials;
   materialSuggestions;
@@ -71,25 +74,36 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
   dlgConfirm: Subject<boolean>;
 
   working: boolean;
-  fromDate; toDate;
-  today = new Date()
+  fromDate;
+  toDate;
+  today = new Date();
 
   plants = [
     { org_id: 285, plant: 'TNR' },
     { org_id: 85, plant: 'TNC' },
-  ]
+  ];
 
-  constructor(private datePipe: DatePipe, private ds: DataService, private store: Store<UserState>, private router: Router, private route: ActivatedRoute, private versionService: VersionService) { 
+  constructor(
+    private datePipe: DatePipe,
+    private ds: DataService,
+    private store: Store<UserState>,
+    private router: Router,
+    private route: ActivatedRoute,
+    private versionService: VersionService
+  ) {
     this.dbVersion = ds.dbVersion;
   }
 
   ngOnInit(): void {
-
     const id = this.route.snapshot.queryParamMap.get('requestID');
     // // console.log(`inside welcome the request ID we are looking for is: ${id}`);
-    this.versionService.getVersion().subscribe(version => {
+    this.versionService.getVersion().subscribe((version) => {
       this.version = version;
     });
+
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    console.log(this.role);
+    this.role = user?.emc_applications?.[0]?.emc_access_level;
     this.referenceDate = new Date('January 1, 1900');
     this.fillRequest = false;
     this.recvRequest = false;
@@ -97,27 +111,26 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
     this.showDialog = false;
     this.showReport = false;
     this.dlgConfirm = new Subject<boolean>();
-    this.version = '1.0.2';
-    this.store.select(getUser).subscribe(state => {
-      if (state && state[0] && state[0].last_name && state[0].emc_applications[0].emc_app_id == 201) {
+    this.version = '';
+    this.store.select(getUser).subscribe((state) => {
+      if (
+        state &&
+        state[0] &&
+        state[0].last_name &&
+        state[0].emc_applications[0].emc_app_id == 201
+      ) {
         this.user = state[0];
         this.getAllRequests();
-      }
-      else {
+      } else {
         // // console.log(`we are going to nope`);
         if (!id) {
           // // console.log(`leaving welcome with no id`);
           this.router.navigate(['nope']);
-        }
-        else {
+        } else {
           // // console.log(`leaving welcome with id: ${id}`);
           this.router.navigate(['nope'], { queryParams: { requestID: id } });
         }
-
-
       }
-
-
     });
 
     this.store.dispatch(UserActions.loadUserInfo());
@@ -126,48 +139,73 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
 
     // this.getAllRequests();
 
-
-
     //this.filteredMaterials = [];
-
   }
 
   ngAfterViewInit() {
-
     //Dude ... this search functionality is on POINT!!
-    fromEvent(this.reqFilter.nativeElement, 'keyup').subscribe(res => {
+    fromEvent(this.reqFilter.nativeElement, 'keyup').subscribe((res) => {
       // @ts-ignore
       const search = res.target.value;
 
       if (search && search.trim().length > 0) {
-        this.requests = this.originalRequests.filter(item => {
-
-          const options:Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-          new Date().toLocaleDateString()
+        this.requests = this.originalRequests.filter((item) => {
+          const options: Intl.DateTimeFormatOptions = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          };
+          new Date().toLocaleDateString();
           return (
-            item.request_id == search ||
+            item.request_id.toString().includes(search) ||
             item.status.toUpperCase().includes(search.toUpperCase()) ||
             item.requested_by.toUpperCase().includes(search.toUpperCase()) ||
-            this.translatePlant(item.org_id).toUpperCase() == search.toUpperCase() ||
-            item.dtm_submitted.toLocaleString() == new Date(search).toLocaleString() ||
-            item.dtm_fulfilled.toLocaleString() == new Date(search).toLocaleString() ||
-            item.dtm_received.toLocaleString() == new Date(search).toLocaleString() ||
-            item.dtm_required.toLocaleString() == new Date(search).toLocaleString() ||
-            item.lines.some(l => l.inventory_item_id.toUpperCase().includes(search.toUpperCase())) ||
-            item.lines.some(l => l.item_desc.toUpperCase().includes(search.toUpperCase())) ||
-            item.lines.some(l => l.package_type_desc.toUpperCase().includes(search.toUpperCase())) ||
-            (new Date(item.dtm_submitted).getFullYear() > 2019 && new Date(item.dtm_submitted).toLocaleDateString(undefined, options).toUpperCase().includes(search.toUpperCase())) ||
-            (new Date(item.dtm_fulfilled).getFullYear() > 2019 && new Date(item.dtm_fulfilled).toLocaleDateString(undefined, options).toUpperCase().includes(search.toUpperCase())) ||
-            (new Date(item.dtm_received).getFullYear() > 2019 && new Date(item.dtm_received).toLocaleDateString(undefined, options).toUpperCase().includes(search.toUpperCase())) ||
-            (new Date(item.dtm_required).getFullYear() > 2019 && new Date(item.dtm_required).toLocaleDateString(undefined, options).toUpperCase().includes(search.toUpperCase()))
-          )
-        })
+            this.translatePlant(item.org_id).toUpperCase() ==
+              search.toUpperCase() ||
+            item.dtm_submitted.toLocaleString() ==
+              new Date(search).toLocaleString() ||
+            item.dtm_fulfilled.toLocaleString() ==
+              new Date(search).toLocaleString() ||
+            item.dtm_received.toLocaleString() ==
+              new Date(search).toLocaleString() ||
+            item.dtm_required.toLocaleString() ==
+              new Date(search).toLocaleString() ||
+            item.lines.some((l) =>
+              l.inventory_item_id.toUpperCase().includes(search.toUpperCase())
+            ) ||
+            item.lines.some((l) =>
+              l.item_desc.toUpperCase().includes(search.toUpperCase())
+            ) ||
+            item.lines.some((l) =>
+              l.package_type_desc.toUpperCase().includes(search.toUpperCase())
+            ) ||
+            (new Date(item.dtm_submitted).getFullYear() > 2019 &&
+              new Date(item.dtm_submitted)
+                .toLocaleDateString(undefined, options)
+                .toUpperCase()
+                .includes(search.toUpperCase())) ||
+            (new Date(item.dtm_fulfilled).getFullYear() > 2019 &&
+              new Date(item.dtm_fulfilled)
+                .toLocaleDateString(undefined, options)
+                .toUpperCase()
+                .includes(search.toUpperCase())) ||
+            (new Date(item.dtm_received).getFullYear() > 2019 &&
+              new Date(item.dtm_received)
+                .toLocaleDateString(undefined, options)
+                .toUpperCase()
+                .includes(search.toUpperCase())) ||
+            (new Date(item.dtm_required).getFullYear() > 2019 &&
+              new Date(item.dtm_required)
+                .toLocaleDateString(undefined, options)
+                .toUpperCase()
+                .includes(search.toUpperCase()))
+          );
+        });
       } else {
         this.requests = JSON.parse(JSON.stringify(this.originalRequests));
-
       }
-      if (this.requests.length)
-        this.sortData(this.requests, 'request_id');
+      if (this.requests.length) this.sortData(this.requests, 'request_id');
     });
 
     /*fromEvent(this.search.nativeElement, 'keypress').subscribe( res => {
@@ -198,13 +236,16 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
         this.materialSuggestions = [];
       }
     })*/
-
   }
   getAllRequests() {
     // this.ds.getAllRequests().subscribe( data => {
     // console.log("Fetching all open requests")
-    this.ds.getOpenRequests().subscribe(data => {
-      this.originalRequests = this.user.emc_applications[0].emc_access_level === 1 ? data : data.filter(item => item.status === 'PENDING');
+    this.ds.getOpenRequests().subscribe((data) => {
+      this.originalRequests =
+        this.user.emc_applications[0].emc_access_level === 1 ||
+        this.user.emc_applications[0].emc_access_level === 10
+          ? data
+          : data.filter((item) => item.status === 'PENDING');
       this.requests = JSON.parse(JSON.stringify(this.originalRequests));
       // console.table(this.requests);
       this.sortData(this.requests, 'request_id');
@@ -214,26 +255,34 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
         // this.clearSelectedRequest();
         this.selectRequestItem(id);
       }
-
-    })
+    });
   }
 
   getRequestByDate() {
-    if (this.fromDate != undefined && this.toDate != undefined) {
-      this.ds.getAllRequestsByDate({ fromDate: this.fromDate, toDate: this.toDate }).subscribe(data => {
-      
-        this.originalRequests = this.user.emc_applications[0].emc_access_level === 1 ? data : data.filter(item => item.status === 'PENDING');
-        this.requests = JSON.parse(JSON.stringify(this.originalRequests));
-        // console.table(this.requests);
-        this.sortData(this.requests, 'request_id');
-        //this.sortData(this.requests, 'dtm_submitted');
-        if (this.route.snapshot.queryParamMap.get('requestID')) {
-          const id = parseInt(this.route.snapshot.queryParamMap.get('requestID'));
-          // this.clearSelectedRequest();
-          this.selectRequestItem(id);
-        }
+    console.log('search btn trigger');
 
-      })
+    if (this.fromDate !== undefined && this.toDate !== undefined) {
+      this.ds
+        .getAllRequestsByDate({ fromDate: this.fromDate, toDate: this.toDate })
+        .subscribe((data) => {
+          const accessLevel = this.user.emc_applications[0].emc_access_level;
+
+          // FIXED: Correct conditional assignment
+          this.originalRequests =
+            accessLevel === 1 || accessLevel === 10
+              ? data
+              : data.filter((item) => item.status === 'PENDING');
+
+          this.requests = JSON.parse(JSON.stringify(this.originalRequests));
+          // console.table(this.requests);
+
+          this.sortData(this.requests, 'request_id');
+
+          const reqId = this.route.snapshot.queryParamMap.get('requestID');
+          if (reqId) {
+            this.selectRequestItem(parseInt(reqId));
+          }
+        });
     }
   }
 
@@ -249,22 +298,26 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
       dtm_fulfilled: null,
       dtm_received: null,
       notes: '',
-      lines: new Array<MatReqLines>()
-    }
+      lines: new Array<MatReqLines>(),
+    };
   }
-  
+
   selectRequestItem(id) {
-    try {     
+    try {
       // console.log(`inside selectRequest with id: ${id}`);
-      this.selectedRequest = JSON.parse(JSON.stringify(this.requests.find(item => { return item.request_id === id })));
+      this.selectedRequest = JSON.parse(
+        JSON.stringify(
+          this.requests.find((item) => {
+            return item.request_id === id;
+          })
+        )
+      );
       this.fillRequest = this.showDate(this.selectedRequest.dtm_fulfilled);
       this.recvRequest = this.showDate(this.selectedRequest.dtm_received);
       //// console.log(this.selectedRequest);
-    }
-    catch (e) {
+    } catch (e) {
       //console.error(e.message)
     }
-
   }
 
   // Lines
@@ -321,7 +374,7 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
   markLinesAsReceived() {
     // console.log(this.selectedRequest);
     this.selectedRequest.dtm_received = new Date();
-    this.selectedRequest.lines.forEach(l => {
+    this.selectedRequest.lines.forEach((l) => {
       l.received_by = this.user.login;
     });
   }
@@ -331,12 +384,36 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
 
     switch (this.user.emc_applications[0].emc_access_level) {
       case 1:
-        if (this.selectedRequest.status === 'NEW' && this.selectedRequest.lines.length > 0)
+        if (
+          this.selectedRequest.status === 'NEW' &&
+          this.selectedRequest.lines.length > 0
+        )
           valid = true;
-        else valid = (this.selectedRequest.status === 'FILLED' && this.selectedRequest.lines.some(item => item.received_qty > 0));
+        else
+          valid =
+            this.selectedRequest.status === 'FILLED' &&
+            this.selectedRequest.lines.some((item) => item.received_qty > 0);
         break;
       case 2:
-        valid = (this.selectedRequest.status === 'PENDING' && this.selectedRequest.lines.some(item => item.actual_qty > 0))
+        valid =
+          this.selectedRequest.status === 'PENDING' &&
+          this.selectedRequest.lines.some((item) => item.actual_qty > 0);
+        break;
+      case 10:
+        if (
+          this.selectedRequest.status === 'NEW' &&
+          this.selectedRequest.lines.length > 0
+        ) {
+          valid = true;
+        } else if (this.selectedRequest.status === 'FILLED') {
+          valid =
+            this.selectedRequest.status === 'FILLED' &&
+            this.selectedRequest.lines.some((item) => item.received_qty > 0);
+        } else {
+          valid =
+            this.selectedRequest.status === 'PENDING' &&
+            this.selectedRequest.lines.some((item) => item.actual_qty > 0);
+        }
         break;
     }
     return valid;
@@ -344,95 +421,91 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
 
   // Form actions
   closeSelectedRequest() {
-    if(this.selectedRequest.request_id === -1){
+    if (this.selectedRequest.request_id === -1) {
       this.selectedRequest.request_id = 1;
     }
     const id = this.selectedRequest.request_id;
 
-    const original = JSON.stringify(this.requests.find(r => r.request_id === id));
+    const original = JSON.stringify(
+      this.requests.find((r) => r.request_id === id)
+    );
     const current = JSON.stringify(this.selectedRequest);
 
-    this.dlgMessage = (original != current) ? `Are you sure you want to close the current request without saving your changes??` : `Are you sure you want to close this request?`;
+    this.dlgMessage =
+      original != current
+        ? `Are you sure you want to close the current request without saving your changes??`
+        : `Are you sure you want to close this request?`;
     this.showDialog = true;
 
-    this.dlgConfirm.pipe(take(1)).subscribe(val => {
-      if (val === true)
-        this.clearSelectedRequest();
+    this.dlgConfirm.pipe(take(1)).subscribe((val) => {
+      if (val === true) this.clearSelectedRequest();
 
       this.dlgMessage = undefined;
       this.showDialog = false;
     });
-
   }
-
-
-
-
-
-
 
   clearSelectedRequest() {
     this.initializeNewRequest();
     this.selectedRequest = undefined;
-
   }
   saveSelectedRequest() {
-
-    const action = this.selectedRequest.status === 'NEW' ? 'N' : this.selectedRequest.status === 'PENDING' ? 'P' : this.selectedRequest.status === 'FILLED' ? 'F' : this.selectedRequest.status === 'CANCELLED' ? 'C' : '';
+    const action =
+      this.selectedRequest.status === 'NEW'
+        ? 'N'
+        : this.selectedRequest.status === 'PENDING'
+        ? 'P'
+        : this.selectedRequest.status === 'FILLED'
+        ? 'F'
+        : this.selectedRequest.status === 'CANCELLED'
+        ? 'C'
+        : '';
 
     if (this.validateLines()) {
       this.working = true;
       this.openDialog();
-      this.ds.saveRequest(this.selectedRequest, action)
-        .subscribe(val => {
-          // console.log(val);
-          this.clearSelectedRequest();
-          this.getAllRequests();
+      this.ds.saveRequest(this.selectedRequest, action).subscribe((val) => {
+        // console.log(val);
+        this.clearSelectedRequest();
+        this.getAllRequests();
 
-          this.closeDialog();
-          this.working = false;
-
-        })
-    }
-    else {
+        this.closeDialog();
+        this.working = false;
+      });
+    } else {
+      alert('Invalid qty, Please review');
       // console.log(`there was an issue with the request object below: `);
-      // console.log(this.selectedRequest);
+      console.log(this.selectedRequest);
     }
-
   }
   cancelRequest() {
-    if (this.selectedRequest.status === 'FILLED') return
+    if (this.selectedRequest.status === 'FILLED') return;
     else {
       this.dlgMessage = `Are you sure you want to cancel the current request??`;
       this.showDialog = true;
 
-      this.dlgConfirm
-        .pipe(take(1))
-        .subscribe(val => {
-          if (val === true) {
-            this.dlgMessage = undefined;
-            this.closeDialog();
-            this.working = true;
-            this.openDialog();
-            this.ds.cancelRequest(this.selectedRequest, 'C')
-              .subscribe(val => {
-                // console.log(val);
-                this.clearSelectedRequest();
-                this.getAllRequests();
+      this.dlgConfirm.pipe(take(1)).subscribe((val) => {
+        if (val === true) {
+          this.dlgMessage = undefined;
+          this.closeDialog();
+          this.working = true;
+          this.openDialog();
+          this.ds.cancelRequest(this.selectedRequest, 'C').subscribe((val) => {
+            // console.log(val);
+            this.clearSelectedRequest();
+            this.getAllRequests();
 
-                this.closeDialog();
-                this.working = false;
-                // if(val === 'SUCCESS'){
-                //
-                // }
-
-              });
-          }
-          else {
-            this.dlgMessage = undefined;
             this.closeDialog();
-          }
-        });
+            this.working = false;
+            // if(val === 'SUCCESS'){
+            //
+            // }
+          });
+        } else {
+          this.dlgMessage = undefined;
+          this.closeDialog();
+        }
+      });
     }
   }
 
@@ -445,12 +518,11 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
     this.showReportToggle();
   }
   cancelRequestFromDialog(e) {
-
     this.selectedRequest = e;
     this.cancelRequest();
   }
   saveRequestFromDialog(e) {
-    // console.log(`inside save in welcome!`);
+    console.log(`inside save in welcome!`);
     this.selectedRequest = e;
 
     // console.log(`valid? ${this.validateLines()}`);
@@ -472,7 +544,6 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
   }
   closeDialog() {
     this.showNotes = this.showDialog = false;
-
   }
 
   // Utility Functions
@@ -486,12 +557,18 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
     return null;
   }
   translatePlant(val) {
-    return this.plants.find(item => item.org_id == val).plant;
+    return this.plants.find((item) => item.org_id == val).plant;
   }
 
   sortData(data, column) {
     if (data && data.length)
-      return (typeof data[0][column] === 'number') ? data.sort((a, b) => { return a[column] - b[column] }) : data.sort((a, b) => { return a[column].localeCompare(b[column]) });
+      return typeof data[0][column] === 'number'
+        ? data.sort((a, b) => {
+            return a[column] - b[column];
+          })
+        : data.sort((a, b) => {
+            return a[column].localeCompare(b[column]);
+          });
   }
   searchKeyUp() {
     /*if(this.materials && this.materials.length > 100 && this.selectedRequestItem.length > 0){
@@ -514,27 +591,23 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
       this.materialSuggestions = [];
     }*/
 
-
     if (this.selectedRequestItem.length > 0) {
       this.selectedRequestItem = this.selectedRequestItem.toUpperCase();
-      let suggestions = this.materials.map(mat => mat.ITEM_NO).filter(mat => mat.toUpperCase().startsWith(this.selectedRequestItem)).sort();
+      let suggestions = this.materials
+        .map((mat) => mat.ITEM_NO)
+        .filter((mat) => mat.toUpperCase().startsWith(this.selectedRequestItem))
+        .sort();
 
       if (suggestions.length > 0)
-        this.bg.nativeElement.value = (this.selectedRequestItem + suggestions[0].substring(this.selectedRequestItem.length));
-      else
-        this.bg.nativeElement.value = '';
-    }
-    else
-      this.bg.nativeElement.value = '';
-
-
-
+        this.bg.nativeElement.value =
+          this.selectedRequestItem +
+          suggestions[0].substring(this.selectedRequestItem.length);
+      else this.bg.nativeElement.value = '';
+    } else this.bg.nativeElement.value = '';
   }
   blurSearch(val) {
-    if (val)
-      this.selectedRequestItem = val.toUpperCase();
-    else
-      this.selectedRequestItem = this.selectedRequestItem.toUpperCase();
+    if (val) this.selectedRequestItem = val.toUpperCase();
+    else this.selectedRequestItem = this.selectedRequestItem.toUpperCase();
 
     this.search.nativeElement.blur();
     this.materialSuggestions = [];
@@ -551,28 +624,27 @@ export class WelcomeComponent implements OnInit, AfterViewInit {
   }
 }
 
-
 export interface MaterialRequest {
-  request_id: number,
-  requested_by: string,
-  org_id: number,
-  status: string,
-  dtm_submitted: Date,
-  dtm_required: Date,
-  dtm_fulfilled: Date,
-  dtm_received: Date,
-  notes: string,
-  lines: Array<MatReqLines>
+  request_id: number;
+  requested_by: string;
+  org_id: number;
+  status: string;
+  dtm_submitted: Date;
+  dtm_required: Date;
+  dtm_fulfilled: Date;
+  dtm_received: Date;
+  notes: string;
+  lines: Array<MatReqLines>;
 }
 export interface MatReqLines {
-  request_id: number,
-  inventory_item_id: string,
-  item_desc: string,
-  package_type_desc: string,
-  requested_qty: number,
-  actual_qty: number,
-  fulfilled_weight: number,
-  received_qty: number,
-  fulfilled_by: string,
-  received_by: string
+  request_id: number;
+  inventory_item_id: string;
+  item_desc: string;
+  package_type_desc: string;
+  requested_qty: number;
+  actual_qty: number;
+  fulfilled_weight: number;
+  received_qty: number;
+  fulfilled_by: string;
+  received_by: string;
 }

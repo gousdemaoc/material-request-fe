@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 //import { DataModule } from './data.module';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {DataState, Package, Product, UserState} from './state/Data.state';
 import {Observable} from 'rxjs';
 import {MaterialRequest} from '../components/welcome/welcome.component';

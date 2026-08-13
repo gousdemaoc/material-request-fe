@@ -6,6 +6,7 @@ import {getUser} from '../../data-module/user.reducer';
 
 @Component({
   selector: 'app-no-auth',
+  standalone: false,
   templateUrl: './no-auth.component.html',
   styleUrls: ['./no-auth.component.scss']
 })

@@ -4,6 +4,7 @@ import { DataService } from '../../../data-module/data.service';
 @Component({
   selector: 'app-report-dlg',
   templateUrl: './report-dlg.component.html',
+  standalone: false,
   styleUrls: ['./report-dlg.component.scss']
 })
 export class ReportDlgComponent implements OnInit, AfterViewInit {

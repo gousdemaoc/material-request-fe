@@ -44,3 +44,21 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Angular generated files
+.angular/
+node_modules/
+dist/
+coverage/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

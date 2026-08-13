@@ -3,7 +3,7 @@ const hostname = window.location.hostname;
 let serverIndex = 0;
 let app = '';
 
-if (hostname.includes('alphaapps.aoc')) {
+if (hostname.includes('alphaapps2.aoc')) {
   serverIndex = 0;
   app = 'MaterialRequestBE/api/'
 } else if (hostname.includes('aoccol-181x')){

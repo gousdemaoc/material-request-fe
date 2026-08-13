@@ -10,7 +10,7 @@ import { AppConfig } from '../config';
 export class DataService {
 
   private server: string[] = [
-    'http://alphaapps.aoc-resins.com/',
+    'https://alphaapps2.aoc-resins.com/',
     'http://aoccol-181x.aoc-resins.com/',    
     'http://aoccol-181s.aoc-resins.com/',
     'https://aoccol-281s.aoc-resins.com/',

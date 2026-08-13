@@ -13,6 +13,7 @@ import * as DataActions from '../../data-module/state/data.actions';
 @Component({
   selector: 'app-request-dlg',
   templateUrl: './request-dlg.component.html',
+  standalone: false,
   styleUrls: ['./request-dlg.component.scss']
 })
 

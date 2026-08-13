@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-no-item-dialog',
+  standalone: false,
   templateUrl: './no-item-dialog.component.html',
   styleUrls: ['./no-item-dialog.component.scss']
 })

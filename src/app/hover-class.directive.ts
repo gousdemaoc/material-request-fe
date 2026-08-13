@@ -1,7 +1,8 @@
 import { Directive, HostListener, ElementRef, Input } from '@angular/core';
 
 @Directive({
-  selector: '[hover-class]'
+  selector: '[hover-class]',
+  standalone: false
 })
 export class HoverClassDirective {
 

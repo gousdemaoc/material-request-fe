@@ -20,6 +20,7 @@ import { DatePipe } from '@angular/common';
 import { VersionService } from '../../services/version.service';
 @Component({
   selector: 'app-welcome',
+  standalone: false,
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.scss'],
 })
